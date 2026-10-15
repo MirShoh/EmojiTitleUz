@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="uz" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EmojiTitle — matndan animatsiyali emoji yasang</title>
+  <meta name="description" content="Matn yozing, uslubni tanlang — Telegram uchun animatsiyali custom emoji-pak tayyor.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%236c4cff'/%3E%3Ctext x='50' y='68' font-size='54' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3EAa%3C/text%3E%3C/svg%3E">
+
+  <!-- Shriftlar (Google Fonts). Internet bo'lmasa tizim shriftlari ishlatiladi. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Caveat:wght@700&family=Comfortaa:wght@700&family=Lobster&family=Marck+Script&family=Montserrat:wght@800&family=Nunito:wght@900&family=Oswald:wght@600&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@800&family=Press+Start+2P&family=Rubik:wght@700&family=Russo+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">Aa</span>
+      <div><b>EmojiTitle</b><small>matndan animatsiyali emoji</small></div>
+    </div>
+    <div class="top-actions">
+      <button id="btnReset" class="ghost" type="button" title="Dizaynni boshlang'ich holatga qaytarish">↺ <span>Boshidan</span></button>
+      <button id="btnShare" class="ghost" type="button" title="Dizayn havolasini nusxalash">🔗 <span>Havola</span></button>
+      <button id="btnTheme" class="ghost" type="button" aria-label="Yorug' / qorong'i rejim">🌓</button>
+    </div>
+  </header>
+
+  <div class="howto" id="howto">
+    <ol>
+      <li><b>1</b><span>Matn yozing</span></li>
+      <li><b>2</b><span>Uslubni tanlang</span></li>
+      <li><b>3</b><span>«Yuklab olish» bo'limidan Telegramga qo'shing</span></li>
+    </ol>
+    <button id="howtoClose" class="x" type="button" aria-label="Yopish">✕</button>
+  </div>
+
+  <main class="wrap">
+    <!-- ============ CHAP: KO'RINISH ============ -->
+    <div class="left">
+      <section class="card c-stage" aria-label="Ko'rinish">
+        <div class="stage" id="stage" data-bg="checker">
+          <div class="stage-inner" id="stageInner">
+            <canvas id="view" width="600" height="200" aria-label="Emoji-matn ko'rinishi"></canvas>
+            <div class="grid-overlay" id="gridOverlay" hidden></div>
+          </div>
+        </div>
+        <div class="stage-bar">
+          <div class="bg-picks" role="group" aria-label="Ko'rinish foni">
+            <button type="button" data-bg="checker" class="bgb bgb-checker active" title="Shaffof fon"></button>
+            <button type="button" data-bg="light" class="bgb bgb-light" title="Och fon"></button>
+            <button type="button" data-bg="dark" class="bgb bgb-dark" title="Qorong'i fon"></button>
+            <button type="button" data-bg="tg" class="bgb bgb-tg" title="Telegram foni"></button>
+          </div>
+          <label class="toggle" title="Matn nechta emojiga bo'linishini ko'rsatadi"><input type="checkbox" id="chkGrid"><span>Bo'laklar</span></label>
+          <button id="btnPlay" class="ghost small" type="button" title="To'xtatish / davom ettirish">⏸</button>
+          <button id="btnCopy" class="ghost small" type="button" title="Rasmni nusxalash (PNG)">📋</button>
+          <span id="info" class="muted info"></span>
+        </div>
+      </section>
+
+      <section class="card c-chat" aria-label="Telegramdagi ko'rinish">
+        <div class="chat-head">
+          <span class="title">Telegramda shunday ko'rinadi</span>
+          <div class="chat-opts">
+            <div class="mini-seg" id="chatTheme" role="group" aria-label="Telegram rejimi">
+              <button type="button" data-chat="dark" class="active" title="Qorong'i rejim">🌙</button>
+              <button type="button" data-chat="light" title="Yorug' rejim">☀️</button>
+            </div>
+            <div class="mini-seg" id="emoSize" role="group" aria-label="Emoji o'lchami">
+              <button type="button" data-px="22">Oddiy</button>
+              <button type="button" data-px="34" class="active">Katta</button>
+              <button type="button" data-px="56">Jumbo</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-bg" id="chatBg" data-chat="dark">
+          <div class="bubble"><span class="bt">1-</span><canvas id="chatView" aria-hidden="true"></canvas></div>
+          <div class="bubble"><span class="bt">Matn ichida:</span><canvas id="chatView2" aria-hidden="true"></canvas><span class="bt">— shunday</span></div>
+        </div>
+      </section>
+
+      <!-- ============ YUKLAB OLISH (chapda, Telegram ko'rinishi ostida) ============ -->
+      <section class="card c-export" aria-label="Yuklab olish">
+        <div class="export-title">⬇️ Yuklab olish <span class="muted">— tayyor bo'lsangiz</span></div>
+        <button id="btnTgOpen" class="primary big wide" type="button">✈️ Telegramga qo'shish</button>
+        <div class="export-row">
+          <button id="btnZip" type="button" title="Telegram uchun tayyor fayllar (ichida qo'llanma bor)"><b>📦 ZIP</b><small>Telegram uchun fayllar</small></button>
+          <button id="btnPng" type="button" title="Shaffof, yuqori sifatli rasm"><b>🖼 PNG</b><small>Oddiy rasm</small></button>
+          <button id="btnApng" type="button" title="Brauzer va saytlar uchun harakatlanuvchi rasm"><b>🎞 APNG</b><small>Harakatlanuvchi rasm</small></button>
+        </div>
+        <progress id="prog" max="1" value="0" hidden></progress>
+        <p id="exportMsg" class="note muted" role="status"></p>
+        <p class="note warnbox" id="webmNote" hidden>⚠️ Bu brauzer animatsiyali emoji (WEBM) yarata olmaydi. <b>Chrome, Edge yoki Firefox</b> (kompyuter yoki Android) da oching — shunda hammasi bir bosishda tayyor bo'ladi.</p>
+      </section>
+    </div>
+
+    <!-- ============ O'NG: SOZLAMALAR + YAKUNIY QADAM ============ -->
+    <div class="right">
+      <section class="card controls" aria-label="Sozlamalar">
+        <div class="field">
+          <label class="label" for="text">Matn</label>
+          <div class="input-row">
+            <input id="text" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="Masalan: Xushxabar">
+            <button id="btnRandom" class="dice" type="button" title="Tasodifiy dizayn" aria-label="Tasodifiy dizayn">🎲</button>
+          </div>
+          <div class="field-foot"><span class="muted count" id="count"></span></div>
+          <div class="err" id="err" hidden></div>
+          <div class="warn" id="warn" hidden></div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Sozlamalar bo'limlari">
+          <button role="tab" type="button" data-tab="presets" aria-selected="true"><i>🎨</i><span>Uslub</span></button>
+          <button role="tab" type="button" data-tab="font" aria-selected="false"><i>🔤</i><span>Shrift</span></button>
+          <button role="tab" type="button" data-tab="color" aria-selected="false"><i>🌈</i><span>Rang</span></button>
+          <button role="tab" type="button" data-tab="shape" aria-selected="false"><i>◼️</i><span>Shakl</span></button>
+          <button role="tab" type="button" data-tab="anim" aria-selected="false"><i>✨</i><span>Harakat</span></button>
+        </div>
+
+        <div class="panel" id="panel-presets" role="tabpanel">
+          <p class="help-line">Tayyor uslubni bosing, keyin kerak bo'lsa boshqa bo'limlarda o'zgartiring.</p>
+          <div class="thumb-grid cols2" id="presets"></div>
+          <div class="saved-head">
+            <h4>Saqlanganlarim</h4>
+            <button id="btnSave" class="link" type="button">★ Joriy dizaynni saqlash</button>
+          </div>
+          <div class="thumb-grid cols2" id="saved"></div>
+          <p class="help-line" id="savedEmpty">Yoqqan dizaynni saqlab qo'ying — keyin bir bosishda qaytasiz.</p>
+        </div>
+
+        <div class="panel" id="panel-font" role="tabpanel" hidden>
+          <div class="row">
+            <label class="toggle"><input type="checkbox" id="chkItalic"><span><i>Kursiv</i> yozuv</span></label>
+            <button id="btnFontUpload" class="link" type="button">+ O'z shriftingiz (.ttf, .otf)</button>
+            <input id="fontFile" type="file" accept=".ttf,.otf,.woff,.woff2" hidden>
+          </div>
+          <div class="font-list" id="fonts"></div>
+        </div>
+
+        <div class="panel" id="panel-color" role="tabpanel" hidden>
+          <div class="selected-name">Tanlangan: <b id="themeName"></b></div>
+          <div id="themeGroups"></div>
+          <div class="custom-colors" id="customColors" hidden>
+            <label>Fon 1 <input type="color" id="cc1" value="#6a00ff"></label>
+            <label>Fon 2 <input type="color" id="cc2" value="#ff0050"></label>
+            <label>Matn <input type="color" id="cct" value="#ffffff"></label>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-shape" role="tabpanel" hidden>
+          <h4>Kattalik <small class="muted">«Maksimal» — fon bo'sh joysiz butun balandlikni egallaydi, emoji kattaroq ko'rinadi</small></h4>
+          <div class="thumb-grid cols3" id="sizes"></div>
+          <h4>Shakl <small class="muted" id="shapeNote"></small></h4>
+          <div class="thumb-grid cols3" id="shapes"></div>
+        </div>
+
+        <div class="panel" id="panel-anim" role="tabpanel" hidden>
+          <p class="help-line">Animatsiya 2 soniyalik aylanma. «Gradient oqimi» gradientli ranglarda, «Yaltirash» esa fonli shakllarda yaxshi ko'rinadi.</p>
+          <div class="anim-list" id="anims"></div>
+          <h4>Tezlik</h4>
+          <div class="mini-seg wide" id="speeds" role="group" aria-label="Animatsiya tezligi"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <p>Hammasi brauzeringizda hisoblanadi — matn va rasmlar hech qayerga yuborilmaydi (faqat «Tez yo'l»ni tanlasangiz, tayyor emoji fayllari Telegram botiga uzatiladi). Custom emoji'ni ishlatish uchun Telegram <b>Premium</b> kerak.</p>
+  </footer>
+
+  <!-- ============ TELEGRAMGA QO'SHISH ============ -->
+  <dialog id="tgDialog" class="dlg" aria-labelledby="tgTitle">
+    <div class="dlg-head">
+      <h3 id="tgTitle">✈️ Telegramga qo'shish</h3>
+      <button id="tgClose" class="x" type="button" aria-label="Yopish">✕</button>
+    </div>
+    <div class="dlg-body">
+      <p class="lead">Emoji-pakni Telegramga qo'shish oson. <b>Bot yaratish shart emas.</b></p>
+      <p class="note warnbox" id="tgNoWebm" hidden>⚠️ Bu brauzer animatsiyali emoji (WEBM) yarata olmaydi. Chrome, Edge yoki Firefox'da oching.</p>
+
+      <!-- 1. Tez yo'l (config.js da apiUrl bo'lsa) -->
+      <section class="method main" id="mFast" hidden>
+        <h4>⚡ Tez yo'l <span class="badge">tavsiya</span></h4>
+        <p>Tugmani bosing → Telegram ochiladi → <b>«Start»</b> ni bosing → emoji-pak tayyor. Hech narsa sozlash kerak emas.</p>
+        <button id="btnFast" class="primary big wide" type="button">⚡ Telegramga yuborish</button>
+        <div id="fastResult" class="tg-result" hidden></div>
+      </section>
+
+      <!-- 2. @Stickers -->
+      <details class="method" id="mManual">
+        <summary>📲 5 qadamda: rasmiy @Stickers orqali</summary>
+        <ol class="steps">
+          <li><span>1</span><div><b>ZIP'ni yuklab oching</b> — ichida <code id="mFolder">webm</code> papkasi bor.
+            <div class="btnline"><button id="btnGuideZip" class="ghost small" type="button">📦 ZIP yuklab olish</button></div></div></li>
+          <li><span>2</span><div><a href="https://t.me/Stickers" target="_blank" rel="noopener">@Stickers</a> botini oching va yuboring: <code>/newemojipack</code>
+            <button class="copy" type="button" data-copy="/newemojipack">nusxalash</button></div></li>
+          <li><span>3</span><div>Turi: <b id="mKind">«Video emoji»</b>. Pak nomi:
+            <code id="mTitle"></code> <button class="copy" type="button" id="mTitleCopy">nusxalash</button></div></li>
+          <li><span>4</span><div>Fayllarni <b>01, 02, …</b> tartibida <b>«Fayl sifatida»</b> yuboring. Bot emoji so'rasa: <code>🔤</code>
+            <button class="copy" type="button" data-copy="🔤">nusxalash</button></div></li>
+          <li><span>5</span><div><code>/publish</code> yuboring (belgi so'ralsa <code>/skip</code>), qisqa nom yozing — havola tayyor!</div></li>
+        </ol>
+      </details>
+
+      <!-- 3. O'z botim -->
+      <details class="method" id="mOwn">
+        <summary>🤖 Ilg'orlar uchun: o'z botim bilan</summary>
+        <div class="own-body">
+          <p class="note">O'zingizning botingiz bo'lsa: <a href="https://t.me/BotFather" target="_blank" rel="noopener">@BotFather</a> → <code>/newbot</code> → token oling; botga bir marta <code>/start</code> yuboring; ID raqamingizni <a href="https://t.me/userinfobot" target="_blank" rel="noopener">@userinfobot</a> dan oling.</p>
+          <label class="f">Bot token
+            <div class="pw">
+              <input id="tgToken" type="password" autocomplete="off" placeholder="123456789:AAH…">
+              <button id="tgEye" class="ghost small" type="button" aria-label="Tokenni ko'rsatish">👁</button>
+            </div>
+          </label>
+          <label class="f">Sizning Telegram ID raqamingiz
+            <input id="tgUser" type="text" inputmode="numeric" autocomplete="off" placeholder="123456789">
+          </label>
+          <label class="toggle"><input type="checkbox" id="tgRemember"><span>Shu brauzerda eslab qolish</span></label>
+          <p class="note muted">🔒 Token faqat shu brauzerda turadi va to'g'ridan-to'g'ri <code>api.telegram.org</code> ga yuboriladi.</p>
+          <button id="btnTg" class="primary wide" type="button">Emoji-pakni yaratish</button>
+          <div id="tgResult" class="tg-result" hidden></div>
+        </div>
+      </details>
+
+      <progress id="tgProg" max="1" value="0" hidden></progress>
+      <p id="tgStatus" class="note muted" role="status"></p>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="core.js"></script>
+  <script src="webm.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

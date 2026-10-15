@@ -1,0 +1,10 @@
+name = "emojititle-api"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+BOT_USERNAME = "YourEmojiBot"       # @ belgisiz, sizning botingiz username'i
+
+[[kv_namespaces]]
+binding = "JOBS"
+id = "PASTE_KV_NAMESPACE_ID"        # wrangler kv namespace create JOBS  natijasidagi id
